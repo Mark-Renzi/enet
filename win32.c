@@ -9,10 +9,10 @@
 #include <windows.h>
 #include <Mswsock.h>
 #ifndef HAS_QOS_FLOWID
-typedef UINT32 QOS_FLOWID;
+// typedef UINT32 QOS_FLOWID;
 #endif
 #ifndef HAS_PQOS_FLOWID
-typedef UINT32 *PQOS_FLOWID;
+// typedef UINT32 *PQOS_FLOWID;
 #endif
 #include <qos2.h>
 #ifndef QOS_NON_ADAPTIVE_FLOW
