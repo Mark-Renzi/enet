@@ -910,6 +910,8 @@ enet_protocol_handle_acknowledge (ENetHost * host, ENetEvent * event, ENetPeer *
         peer -> packetThrottleEpoch = host -> serviceTime;
     }
 
+      printf("Round Trip Time: %u (%u)\n", peer -> roundTripTime, peer -> roundTripTimeVariance);
+
     peer -> lastReceiveTime = ENET_MAX (host -> serviceTime, 1);
     peer -> earliestTimeout = 0;
 
@@ -1668,9 +1670,6 @@ enet_protocol_send_outgoing_commands (ENetHost * host, ENetEvent * event, int ch
            printf ("peer %u: %f%%+-%f%% packet loss, %u+-%u ms round trip time, %f%% throttle, %u outgoing, %u/%u incoming\n", currentPeer -> incomingPeerID, currentPeer -> packetLoss / (float) ENET_PEER_PACKET_LOSS_SCALE, currentPeer -> packetLossVariance / (float) ENET_PEER_PACKET_LOSS_SCALE, currentPeer -> roundTripTime, currentPeer -> roundTripTimeVariance, currentPeer -> packetThrottle / (float) ENET_PEER_PACKET_THROTTLE_SCALE, enet_list_size (& currentPeer -> outgoingCommands) + enet_list_size (& currentPeer -> outgoingSendReliableCommands), currentPeer -> channels != NULL ? enet_list_size (& currentPeer -> channels -> incomingReliableCommands) : 0, currentPeer -> channels != NULL ? enet_list_size (& currentPeer -> channels -> incomingUnreliableCommands) : 0);
 #endif
 
-           // print round trip time to console
-           // printf("RTT: %u\n", currentPeer -> roundTripTime);
-
            currentPeer -> packetLossVariance = (currentPeer -> packetLossVariance * 3 + ENET_DIFFERENCE (packetLoss, currentPeer -> packetLoss)) / 4;
            currentPeer -> packetLoss = (currentPeer -> packetLoss * 7 + packetLoss) / 8;
 
@@ -1915,15 +1914,6 @@ enet_host_service (ENetHost * host, ENetEvent * event, enet_uint32 timeout)
             return 0;
 
           waitCondition = ENET_SOCKET_WAIT_RECEIVE | ENET_SOCKET_WAIT_INTERRUPT;
-
-          // print round trip time to console
-          // printf("RTT: %u\n", host -> peers -> roundTripTime);
-
-          // if roundTripTime changes, print to console
-          if (host -> peers -> roundTripTime != host -> peers -> lastRoundTripTime) {
-            printf("RTT: %u\n", host -> peers -> roundTripTime);
-            host -> peers -> lastRoundTripTime = host -> peers -> roundTripTime;
-          }
 
           if (enet_socket_wait (host -> socket, & waitCondition, ENET_TIME_DIFFERENCE (timeout, host -> serviceTime) / 10) != 0)
             return -1;
