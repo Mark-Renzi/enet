@@ -8,6 +8,7 @@
 #include "enet/utility.h"
 #include "enet/time.h"
 #include "enet/enet.h"
+#include "../../../../src/network_data.h"
 
 static const size_t commandSizes [ENET_PROTOCOL_COMMAND_COUNT] =
 {
@@ -909,7 +910,7 @@ enet_protocol_handle_acknowledge (ENetHost * host, ENetEvent * event, ENetPeer *
         peer -> highestRoundTripTimeVariance = peer -> roundTripTimeVariance;
         peer -> packetThrottleEpoch = host -> serviceTime;
     }
-
+      set_latest_round_trip_time(peer->roundTripTime);
       printf("Round Trip Time: %u (%u)\n", peer -> roundTripTime, peer -> roundTripTimeVariance);
 
     peer -> lastReceiveTime = ENET_MAX (host -> serviceTime, 1);
